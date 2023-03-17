@@ -27,9 +27,16 @@ SENT = {}
 
 L = None  # logger
 
+CONFIG_PATH = os.path.join(r"C:\temp", "global", "config.yaml")
+if not os.path.exists(CONFIG_PATH):
+    CONFIG_PATH = os.path.join("/app", "config.yaml")
+    if not os.path.exists(CONFIG_PATH):
+        CONFIG_PATH = os.path.join(os.getcwd(), "config.yaml")
+        assert os.path.exists(CONFIG_PATH), "Config file not found"
+
 
 def init():
-    global CONFIG, EMAILJS, KITS, REPS, ALL_REPS, L, RDB
+    global CONFIG, CONFIG_PATH, EMAILJS, KITS, REPS, ALL_REPS, L, RDB
 
     L = logging.getLogger("my_logger")
     L.setLevel(logging.DEBUG)
@@ -44,15 +51,7 @@ def init():
 
     L.addHandler(handler)
 
-    config_path = r"C:\Temp\lis_release_status_notifier\config.yaml"
-    if not os.path.exists(config_path):
-        print(
-            f"Config File not found: {config_path}\nContact your systems administrator"
-        )
-        config_path = os.path.join(os.getcwd(), "config.yaml")
-        assert os.path.exists(config_path), f"Config File not found: {config_path}"
-
-    with open(config_path) as f:
+    with open(CONFIG_PATH) as f:
         CONFIG = yaml.load(f, Loader=yaml.FullLoader)
 
     uri = CONFIG.get("mongodb", {}).get("uri", None)
