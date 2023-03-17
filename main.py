@@ -164,13 +164,12 @@ def process_xls(
     ]
     dtype = {
         "Unnamed: 2": "str",
-        "Unnamed: 7": "datetime64[ns]",
+        "Unnamed: 7": "str",
     }
 
     df2 = pd.read_excel(
         fpath,
         sheet_name="10-08-03 (2)",
-        parse_dates=True,
         header=3,
         usecols=columns,
         dtype=dtype,
@@ -181,9 +180,15 @@ def process_xls(
         "date",
     ]
 
-    df2["date"] = df2["date"].dt.strftime("%B %d, %Y")
+    df2 = df2.iloc[[0]]
 
-    df2 = df2[df2["date"].notna()]
+    try:
+        df2["date"] = pd.to_datetime(df2["date"]).dt.strftime("%B %d, %Y")
+    except ValueError:
+        try:
+            df2["date"] = df2["date"].dt.strftime("%B %d, %Y")
+        except AttributeError:
+            pass
 
     return [
         lot for lot in df1.to_dict("records") if lot["lot"] != "Comments:"
