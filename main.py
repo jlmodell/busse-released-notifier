@@ -5,6 +5,7 @@ import signal
 import sys
 from functools import lru_cache
 
+import certifi
 import pandas as pd
 import redis
 import requests
@@ -66,7 +67,7 @@ def init():
 
     EMAILJS = CONFIG.get("emailjs", {})
 
-    client = MongoClient(uri)
+    client = MongoClient(uri, tlsCAFile=certifi.where())
     db = client.get_database("busse_sales_reps")
 
     KITS = db.get_collection("kits")
