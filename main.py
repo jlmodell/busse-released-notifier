@@ -46,22 +46,17 @@ if not os.path.exists(LOG_PATH):
         LOG_PATH = os.path.join(os.getcwd(), "lis_notifier.log")
         assert os.path.exists(LOG_PATH), "Log file not found"
 
+logging.basicConfig(
+    level=logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    handlers=[logging.FileHandler(LOG_PATH), logging.StreamHandler()],
+)
+
 
 def init():
     global CONFIG, CONFIG_PATH, EMAILJS, KITS, REPS, ALL_REPS, L, RDB
 
-    L = logging.getLogger("my_logger")
-    L.setLevel(logging.DEBUG)
-
-    handler = logging.FileHandler(LOG_PATH)
-    handler.setLevel(logging.DEBUG)
-
-    formatter = logging.Formatter(
-        "%(asctime)s - %(name)s - %(levelname)s - %(message)s"
-    )
-    handler.setFormatter(formatter)
-
-    L.addHandler(handler)
+    L = logging.getLogger(__name__)
 
     with open(CONFIG_PATH) as f:
         CONFIG = yaml.load(f, Loader=yaml.FullLoader)
