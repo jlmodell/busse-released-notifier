@@ -27,6 +27,11 @@ SENT = {}
 
 L = None  # logger
 
+BASE_FILE_PATH = r"\\busse\Quality Control\Database$\Database$"
+if not os.path.exists(BASE_FILE_PATH):
+    BASE_FILE_PATH = os.path.join("/app", "qc_db")
+    assert os.path.exists(BASE_FILE_PATH), "Database not found"
+
 CONFIG_PATH = os.path.join(r"C:\temp", "global", "config.yaml")
 if not os.path.exists(CONFIG_PATH):
     CONFIG_PATH = os.path.join("/app", "config.yaml")
@@ -96,19 +101,27 @@ def process_xls(
     year=None,
     purchase_order=None,
 ):
+    global BASE_FILE_PATH, L
+
     if year is None:
         year = input("Enter year: (YYYY)\n> ").strip()
     if purchase_order is None:
         purchase_order = input("Enter purchase order: (E#####)\n> ").upper().strip()
 
     base_path = os.path.join(
-        r"\\busse\Quality Control\Database$\Database$",
+        BASE_FILE_PATH,
         f"{year} Database",
         f"Release Reports {year}",
     )
 
+    if not os.path.exists(base_path):
+        L.debug(f"Directory not found: {base_path}")
+        return
+
     fpath = os.path.join(base_path, f"{purchase_order}.xls")
-    assert os.path.exists(fpath), f"File not found: {fpath}"
+    if not os.path.exists(fpath):
+        L.debug(f"File not found: {fpath}")
+        return
 
     columns = [
         "Lot Number",
@@ -190,7 +203,7 @@ def send_email_through_emailjs(lot):
         "template_params": lot,
     }
 
-    L.info(
+    L.debug(
         f"{lot['lot']}|{lot['part']}|{lot['status']}|{lot['note']}|{lot['po']}|{lot['date']}|{lot['mfg_qty']}|{lot['qty']}|{lot['sales_rep']}|{lot['sales_rep_email']}"
     )
 
@@ -219,9 +232,6 @@ def main(
     global ALL_REPS, HOUSE_ACCOUNT_STRING
 
     lots, details = process_xls(year=year, purchase_order=po)
-
-    print(lots)
-    print(details)
 
     emails = []
     review = []
@@ -319,8 +329,4 @@ def listen_to_queue(queue_name: str = NEW_FILES_QUEUE):
 
 
 if __name__ == "__main__":
-    # main(
-    #     debug=input("Debug? (y/n)\n> ").lower().startswith("y"),
-    #     dont_send=input("Don't send? (y/n)\n> ").lower().startswith("y"),
-    # )
     listen_to_queue()
