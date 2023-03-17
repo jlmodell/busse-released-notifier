@@ -37,6 +37,9 @@ if not os.path.exists(CONFIG_PATH):
 LOG_PATH = r"//busse/home/lis_notifier.log"
 if not os.path.exists(LOG_PATH):
     LOG_PATH = os.path.join("/app", "lis_notifier.log")
+    if not os.path.exists(LOG_PATH):
+        LOG_PATH = os.path.join(os.getcwd(), "lis_notifier.log")
+        assert os.path.exists(LOG_PATH), "Log file not found"
 
 
 def init():
