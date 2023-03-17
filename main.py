@@ -280,11 +280,21 @@ def listen_to_queue(queue_name: str = NEW_FILES_QUEUE):
                 if data["file_name"].lower().endswith(".xls"):
                     po = data["file_name"].split(".")[0]
 
-                if po in SENT:
+                # check redis if key = po exists
+                if RDB.exists(po):
                     print(f"Skipping (Duplicate) {po}...{data['year']}")
                     continue
 
-                SENT[po] = True
+                RDB.set(po, 1)
+
+                # if po in SENT:
+                #     print(f"Skipping (Duplicate) {po}...{data['year']}")
+                #     continue
+
+                # SENT[po] = True
+
+                # switched to using redis to store sent files instead of a global variable
+                # this is to prevent the script from crashing and losing track of what has been sent
 
                 main(
                     year=data["year"],
