@@ -5,5 +5,8 @@ services:
     restart: unless-stopped
     build:
       context: .
-      dockerfile: Dockerfile            
+      dockerfile: Dockerfile
+    volumes:
+      - ./config.yaml:/app/config.yaml
+      - ./lis_notifier.log:/app/lis_notifier.log
     entrypoint: ["/app/main"]

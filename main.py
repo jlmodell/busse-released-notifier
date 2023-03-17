@@ -34,6 +34,10 @@ if not os.path.exists(CONFIG_PATH):
         CONFIG_PATH = os.path.join(os.getcwd(), "config.yaml")
         assert os.path.exists(CONFIG_PATH), "Config file not found"
 
+LOG_PATH = r"//busse/home/lis_notifier.log"
+if not os.path.exists(LOG_PATH):
+    LOG_PATH = os.path.join("/app", "lis_notifier.log")
+
 
 def init():
     global CONFIG, CONFIG_PATH, EMAILJS, KITS, REPS, ALL_REPS, L, RDB
@@ -41,7 +45,7 @@ def init():
     L = logging.getLogger("my_logger")
     L.setLevel(logging.DEBUG)
 
-    handler = logging.FileHandler("//busse/home/lis_notifier.log")
+    handler = logging.FileHandler(LOG_PATH)
     handler.setLevel(logging.DEBUG)
 
     formatter = logging.Formatter(

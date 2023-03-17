@@ -9,7 +9,5 @@ RUN apt-get update && \
 # Copy the built application from the host into the container
 COPY dist/main /app/main
 
-COPY config.yaml /app/config.yaml
-
 # Set the entry point for the container to run the application
 ENTRYPOINT ["/bin/bash", "-c", "/app/main"]
